@@ -105,25 +105,25 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
 
   if (isLoading) {
     return (
-      <div className={`flex items-center justify-center py-8 ${className || ''}`}>
-        <div className="text-muted-foreground">Loading submissions...</div>
+      <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
+        <div className="af-text-muted-foreground">Loading submissions...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center py-8 ${className || ''}`}>
-        <div className="text-destructive">Error: {error.message}</div>
+      <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
+        <div className="af-text-destructive">Error: {error.message}</div>
       </div>
     )
   }
 
   if (submissions.length === 0 && page === 0) {
     return (
-      <div className={`flex flex-col items-center justify-center py-12 ${className || ''}`}>
-        <Inbox className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground text-center">
+      <div className={`af-flex af-flex-col af-items-center af-justify-center af-py-12 ${className || ''}`}>
+        <Inbox className="af-h-12 af-w-12 af-text-muted-foreground af-mb-4" />
+        <p className="af-text-muted-foreground af-text-center">
           No submissions yet.
           <br />
           Submissions will appear here when visitors use your form.
@@ -140,11 +140,11 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Status</TableHead>
+            <TableHead className="af-w-[100px]">Status</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Preview</TableHead>
             <TableHead>Date</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="af-text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -155,7 +155,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
             return (
               <TableRow
                 key={submission.id}
-                className={!submission.is_read ? 'bg-muted/30' : ''}
+                className={!submission.is_read ? 'af-bg-muted/30' : ''}
               >
                 <TableCell>
                   {submission.is_spam ? (
@@ -166,28 +166,28 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
                     <Badge variant="secondary">Read</Badge>
                   )}
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="af-font-medium">
                   {email || (
-                    <span className="text-muted-foreground italic">No email</span>
+                    <span className="af-text-muted-foreground af-italic">No email</span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground max-w-[200px] truncate">
+                <TableCell className="af-text-muted-foreground af-max-w-[200px] af-truncate">
                   {preview || (
-                    <span className="italic">No preview available</span>
+                    <span className="af-italic">No preview available</span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="af-text-muted-foreground">
                   {formatDate(submission.metadata.submitted_at)}
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
+                <TableCell className="af-text-right">
+                  <div className="af-flex af-items-center af-justify-end af-gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleViewSubmission(submission)}
                       title="View details"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="af-h-4 af-w-4" />
                     </Button>
                     {submission.is_read && !submission.is_spam && (
                       <Button
@@ -196,7 +196,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
                         onClick={() => markAsSpam(submission.id)}
                         title="Mark as spam"
                       >
-                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTriangle className="af-h-4 af-w-4" />
                       </Button>
                     )}
                     {!submission.is_read && (
@@ -206,7 +206,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
                         onClick={() => markAsRead(submission.id)}
                         title="Mark as read"
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="af-h-4 af-w-4" />
                       </Button>
                     )}
                     <Button
@@ -215,7 +215,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
                       onClick={() => handleDelete(submission.id)}
                       title="Delete"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="af-h-4 af-w-4" />
                     </Button>
                   </div>
                 </TableCell>
@@ -226,8 +226,8 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
       </Table>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-2 py-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="af-flex af-items-center af-justify-between af-px-2 af-py-4">
+        <div className="af-flex af-items-center af-gap-2 af-text-sm af-text-muted-foreground">
           <span>
             Showing {startIndex}-{endIndex} of {total}
           </span>
@@ -235,7 +235,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
             value={String(pageSize)}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="w-[70px] h-8">
+            <SelectTrigger className="af-w-[70px] af-h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -247,14 +247,14 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
           </Select>
           <span>per page</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="af-flex af-items-center af-gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setPage(page - 1)}
             disabled={!hasPreviousPage}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
+            <ChevronLeft className="af-h-4 af-w-4 af-mr-1" />
             Previous
           </Button>
           <Button
@@ -264,7 +264,7 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
             disabled={!hasNextPage}
           >
             Next
-            <ChevronRight className="h-4 w-4 ml-1" />
+            <ChevronRight className="af-h-4 af-w-4 af-ml-1" />
           </Button>
         </div>
       </div>

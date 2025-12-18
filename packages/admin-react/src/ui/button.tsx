@@ -4,26 +4,26 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/cn'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'af-inline-flex af-items-center af-justify-center af-gap-2 af-whitespace-nowrap af-rounded-md af-text-sm af-font-medium af-transition-colors focus-visible:af-outline-none focus-visible:af-ring-1 focus-visible:af-ring-ring disabled:af-pointer-events-none disabled:af-opacity-50 [&_svg]:af-pointer-events-none [&_svg]:af-size-4 [&_svg]:af-shrink-0',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+          'af-bg-primary af-text-primary-foreground af-shadow hover:af-bg-primary/90',
         destructive:
-          'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+          'af-bg-destructive af-text-destructive-foreground af-shadow-sm hover:af-bg-destructive/90',
         outline:
-          'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
+          'af-border af-border-input af-bg-background af-shadow-sm hover:af-bg-accent hover:af-text-accent-foreground',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'af-bg-secondary af-text-secondary-foreground af-shadow-sm hover:af-bg-secondary/80',
+        ghost: 'hover:af-bg-accent hover:af-text-accent-foreground',
+        link: 'af-text-primary af-underline-offset-4 hover:af-underline',
       },
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
-        icon: 'h-9 w-9',
+        default: 'af-h-9 af-px-4 af-py-2',
+        sm: 'af-h-8 af-rounded-md af-px-3 af-text-xs',
+        lg: 'af-h-10 af-rounded-md af-px-8',
+        icon: 'af-h-9 af-w-9',
       },
     },
     defaultVariants: {

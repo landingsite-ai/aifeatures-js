@@ -3,21 +3,21 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/cn'
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'af-inline-flex af-items-center af-rounded-md af-border af-px-2.5 af-py-0.5 af-text-xs af-font-semibold af-transition-colors focus:af-outline-none focus:af-ring-2 focus:af-ring-ring focus:af-ring-offset-2',
   {
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80',
+          'af-border-transparent af-bg-primary af-text-primary-foreground af-shadow hover:af-bg-primary/80',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'af-border-transparent af-bg-secondary af-text-secondary-foreground hover:af-bg-secondary/80',
         destructive:
-          'border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80',
-        outline: 'text-foreground',
+          'af-border-transparent af-bg-destructive af-text-destructive-foreground af-shadow hover:af-bg-destructive/80',
+        outline: 'af-text-foreground',
         success:
-          'border-transparent bg-green-100 text-green-800',
+          'af-border-transparent af-bg-green-100 af-text-green-800',
         warning:
-          'border-transparent bg-yellow-100 text-yellow-800',
+          'af-border-transparent af-bg-yellow-100 af-text-yellow-800',
       },
     },
     defaultVariants: {

@@ -1,11 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /*
  * aifeatures admin components
- * These CSS variables can be overridden by consumers to theme the components
+ *
+ * Styles are scoped to .aifeatures-admin to avoid conflicts with host applications.
+ * All Tailwind utilities are prefixed with 'af-' to prevent class name collisions.
+ * We intentionally omit @tailwind base to avoid global CSS resets.
  */
+
+/* Tailwind utilities with af- prefix */
+@tailwind utilities;
+
+/* CSS Variables scoped to .aifeatures-admin */
 .aifeatures-admin {
   /* Light theme defaults */
   --background: 0 0% 100%;
@@ -57,10 +61,10 @@
 .aifeatures-admin {
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
 }
 
-.aifeatures-admin * {
+/* Scoped border color - only apply to elements with af- classes */
+.aifeatures-admin [class*="af-border"] {
   border-color: hsl(var(--border));
 }
 

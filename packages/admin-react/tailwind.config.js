@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  prefix: 'af-',
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {

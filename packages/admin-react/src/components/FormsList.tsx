@@ -33,25 +33,25 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
 
   if (isLoading) {
     return (
-      <div className={`flex items-center justify-center py-8 ${className || ''}`}>
-        <div className="text-muted-foreground">Loading forms...</div>
+      <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
+        <div className="af-text-muted-foreground">Loading forms...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center py-8 ${className || ''}`}>
-        <div className="text-destructive">Error: {error.message}</div>
+      <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
+        <div className="af-text-destructive">Error: {error.message}</div>
       </div>
     )
   }
 
   if (forms.length === 0) {
     return (
-      <div className={`flex flex-col items-center justify-center py-12 ${className || ''}`}>
-        <Inbox className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground text-center">
+      <div className={`af-flex af-flex-col af-items-center af-justify-center af-py-12 ${className || ''}`}>
+        <Inbox className="af-h-12 af-w-12 af-text-muted-foreground af-mb-4" />
+        <p className="af-text-muted-foreground af-text-center">
           No forms yet.
           <br />
           Forms will appear here when the AI creates contact forms on your website.
@@ -69,15 +69,15 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
             <TableHead>Endpoint</TableHead>
             <TableHead>Captcha</TableHead>
             <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="af-text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {forms.map((form) => (
             <TableRow key={form.id}>
-              <TableCell className="font-medium">{form.name}</TableCell>
+              <TableCell className="af-font-medium">{form.name}</TableCell>
               <TableCell>
-                <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                <code className="af-text-xs af-bg-muted af-px-1.5 af-py-0.5 af-rounded">
                   {form.endpoint_url.replace('https://aifeatures.dev', '')}
                 </code>
               </TableCell>
@@ -86,11 +86,11 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
                   {form.captcha.enabled ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="af-text-muted-foreground">
                 {formatDate(form.created_at)}
               </TableCell>
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
+              <TableCell className="af-text-right">
+                <div className="af-flex af-items-center af-justify-end af-gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -109,7 +109,7 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
                       rel="noopener noreferrer"
                       title="Open endpoint"
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink className="af-h-4 af-w-4" />
                     </a>
                   </Button>
                 </div>

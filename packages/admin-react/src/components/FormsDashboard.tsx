@@ -40,9 +40,9 @@ export function FormsDashboard({ className }: FormsDashboardProps) {
     <div className={className}>
       {view === 'list' && (
         <div>
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold">Forms</h2>
-            <p className="text-sm text-muted-foreground">
+          <div className="af-mb-6">
+            <h2 className="af-text-lg af-font-semibold">Forms</h2>
+            <p className="af-text-sm af-text-muted-foreground">
               Manage your contact forms and view submissions.
             </p>
           </div>
@@ -53,19 +53,19 @@ export function FormsDashboard({ className }: FormsDashboardProps) {
       {view === 'detail' && selectedForm && (
         <div>
           {/* Header with back button */}
-          <div className="mb-6">
+          <div className="af-mb-6">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleBack}
-              className="mb-2 -ml-2"
+              className="af-mb-2 af--ml-2"
             >
-              <ArrowLeft className="h-4 w-4 mr-1" />
+              <ArrowLeft className="af-h-4 af-w-4 af-mr-1" />
               Back to Forms
             </Button>
-            <h2 className="text-lg font-semibold">{selectedForm.name}</h2>
-            <p className="text-sm text-muted-foreground">
-              <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+            <h2 className="af-text-lg af-font-semibold">{selectedForm.name}</h2>
+            <p className="af-text-sm af-text-muted-foreground">
+              <code className="af-text-xs af-bg-muted af-px-1.5 af-py-0.5 af-rounded">
                 {selectedForm.endpoint_url}
               </code>
             </p>
@@ -76,13 +76,13 @@ export function FormsDashboard({ className }: FormsDashboardProps) {
             value={activeTab}
             onValueChange={(v) => setActiveTab(v as 'submissions' | 'settings')}
           >
-            <TabsList className="mb-4">
-              <TabsTrigger value="submissions" className="gap-2">
-                <Inbox className="h-4 w-4" />
+            <TabsList className="af-mb-4">
+              <TabsTrigger value="submissions" className="af-gap-2">
+                <Inbox className="af-h-4 af-w-4" />
                 Submissions
               </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-2">
-                <Settings className="h-4 w-4" />
+              <TabsTrigger value="settings" className="af-gap-2">
+                <Settings className="af-h-4 af-w-4" />
                 Settings
               </TabsTrigger>
             </TabsList>
