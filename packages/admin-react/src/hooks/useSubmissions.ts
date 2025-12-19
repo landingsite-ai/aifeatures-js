@@ -3,7 +3,6 @@ import { useAifeaturesContext } from '../provider/AifeaturesProvider'
 import type {
   Submission,
   PaginatedSubmissions,
-  UpdateSubmissionInput,
   GetSubmissionsOptions,
 } from '../types'
 
@@ -19,25 +18,17 @@ export interface UseSubmissionsReturn {
   setPage: (page: number) => void
   setPageSize: (size: number) => void
   refetch: () => Promise<void>
-  updateSubmission: (
-    submissionId: string,
-    input: UpdateSubmissionInput
-  ) => Promise<Submission>
   deleteSubmission: (submissionId: string) => Promise<void>
-  markAsRead: (submissionId: string) => Promise<void>
-  markAsSpam: (submissionId: string) => Promise<void>
 }
 
 export interface UseSubmissionsOptions {
   formId: string
   initialPageSize?: number
-  includeSpam?: boolean
 }
 
 export function useSubmissions({
   formId,
   initialPageSize = 25,
-  includeSpam = false,
 }: UseSubmissionsOptions): UseSubmissionsReturn {
   const { api } = useAifeaturesContext()
   const [submissions, setSubmissions] = React.useState<Submission[]>([])
@@ -56,7 +47,6 @@ export function useSubmissions({
       const options: GetSubmissionsOptions = {
         limit: pageSize,
         offset: page * pageSize,
-        include_spam: includeSpam,
       }
       const data: PaginatedSubmissions = await api.getSubmissions(
         formId,
@@ -71,25 +61,11 @@ export function useSubmissions({
     } finally {
       setIsLoading(false)
     }
-  }, [api, formId, page, pageSize, includeSpam])
+  }, [api, formId, page, pageSize])
 
   React.useEffect(() => {
     fetchSubmissions()
   }, [fetchSubmissions])
-
-  const updateSubmission = React.useCallback(
-    async (
-      submissionId: string,
-      input: UpdateSubmissionInput
-    ): Promise<Submission> => {
-      const submission = await api.updateSubmission(submissionId, input)
-      setSubmissions((prev) =>
-        prev.map((s) => (s.id === submissionId ? submission : s))
-      )
-      return submission
-    },
-    [api]
-  )
 
   const deleteSubmission = React.useCallback(
     async (submissionId: string): Promise<void> => {
@@ -98,20 +74,6 @@ export function useSubmissions({
       setTotal((prev) => prev - 1)
     },
     [api]
-  )
-
-  const markAsRead = React.useCallback(
-    async (submissionId: string): Promise<void> => {
-      await updateSubmission(submissionId, { is_read: true })
-    },
-    [updateSubmission]
-  )
-
-  const markAsSpam = React.useCallback(
-    async (submissionId: string): Promise<void> => {
-      await updateSubmission(submissionId, { is_spam: true })
-    },
-    [updateSubmission]
   )
 
   const totalPages = Math.ceil(total / pageSize)
@@ -131,9 +93,6 @@ export function useSubmissions({
       setPage(0) // Reset to first page when page size changes
     },
     refetch: fetchSubmissions,
-    updateSubmission,
     deleteSubmission,
-    markAsRead,
-    markAsSpam,
   }
 }

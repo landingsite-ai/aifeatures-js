@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ExternalLink, Inbox } from 'lucide-react'
+import { Inbox, Settings } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -8,24 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table'
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { useForms } from '../hooks/useForms'
 import type { Form } from '../types'
 
 export interface FormsListProps {
   /** Called when a form is selected */
-  onSelectForm?: (form: Form) => void
+  onSelectForm?: (form: Form, tab: 'submissions' | 'settings') => void
   /** Optional className */
   className?: string
-}
-
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 export function FormsList({ onSelectForm, className }: FormsListProps) {
@@ -67,8 +58,6 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Endpoint</TableHead>
-            <TableHead>Captcha</TableHead>
-            <TableHead>Created</TableHead>
             <TableHead className="af-text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -81,36 +70,23 @@ export function FormsList({ onSelectForm, className }: FormsListProps) {
                   {form.endpoint_url.replace('https://aifeatures.dev', '')}
                 </code>
               </TableCell>
-              <TableCell>
-                <Badge variant={form.captcha.enabled ? 'success' : 'secondary'}>
-                  {form.captcha.enabled ? 'Enabled' : 'Disabled'}
-                </Badge>
-              </TableCell>
-              <TableCell className="af-text-muted-foreground">
-                {formatDate(form.created_at)}
-              </TableCell>
               <TableCell className="af-text-right">
                 <div className="af-flex af-items-center af-justify-end af-gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onSelectForm?.(form)}
+                    onClick={() => onSelectForm?.(form, 'submissions')}
                   >
-                    View Submissions
+                    <Inbox className="af-h-4 af-w-4 af-mr-1" />
+                    Submissions
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    asChild
+                    size="sm"
+                    onClick={() => onSelectForm?.(form, 'settings')}
                   >
-                    <a
-                      href={form.endpoint_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Open endpoint"
-                    >
-                      <ExternalLink className="af-h-4 af-w-4" />
-                    </a>
+                    <Settings className="af-h-4 af-w-4 af-mr-1" />
+                    Settings
                   </Button>
                 </div>
               </TableCell>

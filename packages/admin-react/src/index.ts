@@ -40,7 +40,6 @@ export type {
   FormsListResponse,
   CreateFormInput,
   UpdateFormInput,
-  UpdateSubmissionInput,
   GetSubmissionsOptions,
   ApiError,
 } from './types'

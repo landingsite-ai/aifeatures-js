@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { Save, Plus, X, Loader2 } from 'lucide-react'
+import { Plus, X, Loader2, Check } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Badge } from '../ui/badge'
 import { useForms } from '../hooks/useForms'
-import type { Form } from '../types'
+import type { Form, UpdateFormInput } from '../types'
 
 export interface FormSettingsProps {
   /** The form to edit */
@@ -19,6 +19,7 @@ export interface FormSettingsProps {
 export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
   const { updateForm } = useForms()
   const [isSaving, setIsSaving] = React.useState(false)
+  const [lastSaved, setLastSaved] = React.useState<Date | null>(null)
   const [error, setError] = React.useState<string | null>(null)
 
   // Local form state
@@ -37,7 +38,33 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
     setError(null)
   }, [form])
 
-  const handleAddEmail = () => {
+  // Auto-save function
+  const save = React.useCallback(
+    async (updates: UpdateFormInput) => {
+      try {
+        setIsSaving(true)
+        setError(null)
+        const updatedForm = await updateForm(form.id, updates)
+        setLastSaved(new Date())
+        onSaved?.(updatedForm)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to save')
+      } finally {
+        setIsSaving(false)
+      }
+    },
+    [form.id, updateForm, onSaved]
+  )
+
+  // Clear "saved" indicator after 2 seconds
+  React.useEffect(() => {
+    if (lastSaved) {
+      const timer = setTimeout(() => setLastSaved(null), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [lastSaved])
+
+  const handleAddEmail = async () => {
     const email = newEmail.trim().toLowerCase()
     if (!email) return
     if (!email.includes('@')) {
@@ -48,47 +75,52 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
       setError('This email is already added')
       return
     }
-    setEmailRecipients([...emailRecipients, email])
+    const newRecipients = [...emailRecipients, email]
+    setEmailRecipients(newRecipients)
     setNewEmail('')
     setError(null)
+    await save({ email_recipients: newRecipients })
   }
 
-  const handleRemoveEmail = (email: string) => {
-    setEmailRecipients(emailRecipients.filter((e) => e !== email))
+  const handleRemoveEmail = async (email: string) => {
+    const newRecipients = emailRecipients.filter((e) => e !== email)
+    setEmailRecipients(newRecipients)
+    await save({ email_recipients: newRecipients })
   }
 
-  const handleSave = async () => {
-    try {
-      setIsSaving(true)
-      setError(null)
-
-      const updatedForm = await updateForm(form.id, {
-        name: name !== form.name ? name : undefined,
-        redirect_url: redirectUrl !== (form.redirect_url || '')
-          ? redirectUrl || null
-          : undefined,
-        email_recipients:
-          JSON.stringify(emailRecipients) !==
-          JSON.stringify(form.email_recipients)
-            ? emailRecipients
-            : undefined,
-      })
-
-      onSaved?.(updatedForm)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save settings')
-    } finally {
-      setIsSaving(false)
+  // Save text fields on blur
+  const handleNameBlur = async () => {
+    if (name !== form.name) {
+      await save({ name })
     }
   }
 
-  const hasChanges =
-    name !== form.name ||
-    redirectUrl !== (form.redirect_url || '') ||
-    JSON.stringify(emailRecipients) !== JSON.stringify(form.email_recipients)
+  const handleRedirectBlur = async () => {
+    const newValue = redirectUrl || null
+    if (newValue !== form.redirect_url) {
+      await save({ redirect_url: newValue })
+    }
+  }
 
   return (
-    <div className={`af-space-y-6 ${className || ''}`}>
+    <div className={`af-space-y-6 af-relative ${className || ''}`}>
+      {/* Toast notification */}
+      {(isSaving || lastSaved) && (
+        <div className="aifeatures-admin af-fixed af-bottom-4 af-right-4 af-z-50">
+          {isSaving ? (
+            <div className="af-flex af-items-center af-gap-2 af-bg-background af-border af-shadow-lg af-rounded-lg af-px-4 af-py-3">
+              <Loader2 className="af-h-4 af-w-4 af-animate-spin af-text-muted-foreground" />
+              <span className="af-text-sm">Saving...</span>
+            </div>
+          ) : (
+            <div className="af-flex af-items-center af-gap-2 af-bg-green-50 af-border af-border-green-200 af-shadow-lg af-rounded-lg af-px-4 af-py-3">
+              <Check className="af-h-4 af-w-4 af-text-green-600" />
+              <span className="af-text-sm af-text-green-800">Changes saved</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Form Name */}
       <div className="af-space-y-2">
         <Label htmlFor="form-name">Form Name</Label>
@@ -96,6 +128,7 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
           id="form-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={handleNameBlur}
           placeholder="Contact Form"
         />
         <p className="af-text-xs af-text-muted-foreground">
@@ -117,6 +150,7 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
                 type="button"
                 onClick={() => handleRemoveEmail(email)}
                 className="af-ml-1 hover:af-text-destructive"
+                disabled={isSaving}
               >
                 <X className="af-h-3 af-w-3" />
               </button>
@@ -140,12 +174,13 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
                 handleAddEmail()
               }
             }}
+            disabled={isSaving}
           />
           <Button
             type="button"
             variant="outline"
             onClick={handleAddEmail}
-            disabled={!newEmail.trim()}
+            disabled={!newEmail.trim() || isSaving}
           >
             <Plus className="af-h-4 af-w-4" />
           </Button>
@@ -159,6 +194,7 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
           id="redirect-url"
           value={redirectUrl}
           onChange={(e) => setRedirectUrl(e.target.value)}
+          onBlur={handleRedirectBlur}
           placeholder="/thank-you"
         />
         <p className="af-text-xs af-text-muted-foreground">
@@ -201,23 +237,6 @@ export function FormSettings({ form, onSaved, className }: FormSettingsProps) {
           {error}
         </div>
       )}
-
-      {/* Save button */}
-      <div className="af-flex af-justify-end">
-        <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
-          {isSaving ? (
-            <>
-              <Loader2 className="af-h-4 af-w-4 af-mr-2 af-animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="af-h-4 af-w-4 af-mr-2" />
-              Save Changes
-            </>
-          )}
-        </Button>
-      </div>
     </div>
   )
 }

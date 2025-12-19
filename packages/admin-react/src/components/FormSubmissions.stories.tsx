@@ -101,8 +101,6 @@ export const ManySubmissions: Story = {
                   Date.now() - i * 24 * 60 * 60 * 1000
                 ).toISOString(),
               },
-              is_read: i > 2,
-              is_spam: false,
             }))
 
             return HttpResponse.json({
@@ -122,7 +120,7 @@ export const ManySubmissions: Story = {
   },
 }
 
-export const AllRead: Story = {
+export const WithAttachments: Story = {
   parameters: {
     msw: {
       handlers: [
@@ -130,16 +128,17 @@ export const AllRead: Story = {
           'https://aifeatures.dev/api/v1/forms/:formId/submissions',
           async () => {
             await delay(500)
-            const allRead = mockSubmissions
-              .filter((s) => !s.is_spam)
-              .map((s) => ({ ...s, is_read: true }))
             return HttpResponse.json({
-              submissions: allRead,
-              total: allRead.length,
+              submissions: mockSubmissions,
+              total: mockSubmissions.length,
               limit: 25,
               offset: 0,
             })
           }
+        ),
+        ...handlers.filter(
+          (h) =>
+            !h.info.path.toString().includes('/forms/:formId/submissions')
         ),
       ],
     },

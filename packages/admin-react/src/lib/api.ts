@@ -5,7 +5,6 @@ import type {
   PaginatedSubmissions,
   CreateFormInput,
   UpdateFormInput,
-  UpdateSubmissionInput,
   GetSubmissionsOptions,
   ApiError,
 } from '../types'
@@ -35,11 +34,10 @@ export interface AifeaturesApiClient {
     options?: GetSubmissionsOptions
   ): Promise<PaginatedSubmissions>
   getSubmission(submissionId: string): Promise<Submission>
-  updateSubmission(
-    submissionId: string,
-    input: UpdateSubmissionInput
-  ): Promise<Submission>
   deleteSubmission(submissionId: string): Promise<void>
+
+  // Attachments
+  downloadAttachment(submissionId: string, filename: string): Promise<void>
 }
 
 export function createApiClient(
@@ -125,9 +123,6 @@ export function createApiClient(
       if (options.offset !== undefined) {
         params.set('offset', String(options.offset))
       }
-      if (options.include_spam) {
-        params.set('include_spam', 'true')
-      }
       const query = params.toString()
       const path = `/api/v1/forms/${formId}/submissions${query ? `?${query}` : ''}`
       return request<PaginatedSubmissions>(path)
@@ -137,20 +132,45 @@ export function createApiClient(
       return request<Submission>(`/api/v1/submissions/${submissionId}`)
     },
 
-    async updateSubmission(
-      submissionId: string,
-      input: UpdateSubmissionInput
-    ): Promise<Submission> {
-      return request<Submission>(`/api/v1/submissions/${submissionId}`, {
-        method: 'PATCH',
-        body: JSON.stringify(input),
-      })
-    },
-
     async deleteSubmission(submissionId: string): Promise<void> {
       await request<void>(`/api/v1/submissions/${submissionId}`, {
         method: 'DELETE',
       })
+    },
+
+    // Attachments
+    async downloadAttachment(submissionId: string, filename: string): Promise<void> {
+      const url = `${apiUrl}/api/v1/submissions/${submissionId}/attachments/${encodeURIComponent(filename)}`
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${siteToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        let details: ApiError | undefined
+        try {
+          details = await response.json()
+        } catch {
+          // Ignore JSON parse errors
+        }
+        throw new AifeaturesApiError(
+          details?.error || `Download failed with status ${response.status}`,
+          response.status,
+          details
+        )
+      }
+
+      // Create blob and trigger download
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(blobUrl)
     },
   }
 }

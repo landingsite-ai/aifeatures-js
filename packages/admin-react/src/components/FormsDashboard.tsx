@@ -21,10 +21,10 @@ export function FormsDashboard({ className }: FormsDashboardProps) {
     'submissions'
   )
 
-  const handleSelectForm = (form: Form) => {
+  const handleSelectForm = (form: Form, tab: 'submissions' | 'settings') => {
     setSelectedForm(form)
     setView('detail')
-    setActiveTab('submissions')
+    setActiveTab(tab)
   }
 
   const handleBack = () => {

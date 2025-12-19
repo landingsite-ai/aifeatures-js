@@ -3,10 +3,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  Trash2,
-  AlertTriangle,
   Inbox,
-  Check,
+  Paperclip,
 } from 'lucide-react'
 import {
   Table,
@@ -16,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table'
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import {
   Select,
@@ -35,6 +32,8 @@ export interface FormSubmissionsProps {
   /** Optional className */
   className?: string
 }
+
+type View = 'list' | 'detail'
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleString(undefined, {
@@ -80,29 +79,35 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
     hasPreviousPage,
     setPage,
     setPageSize,
-    markAsRead,
-    markAsSpam,
-    deleteSubmission,
   } = useSubmissions({ formId })
 
+  const [view, setView] = React.useState<View>('list')
   const [selectedSubmission, setSelectedSubmission] =
     React.useState<Submission | null>(null)
-  const [detailOpen, setDetailOpen] = React.useState(false)
 
-  const handleViewSubmission = async (submission: Submission) => {
+  const handleViewSubmission = (submission: Submission) => {
     setSelectedSubmission(submission)
-    setDetailOpen(true)
-    if (!submission.is_read) {
-      await markAsRead(submission.id)
-    }
+    setView('detail')
   }
 
-  const handleDelete = async (submissionId: string) => {
-    if (window.confirm('Are you sure you want to delete this submission?')) {
-      await deleteSubmission(submissionId)
-    }
+  const handleBack = () => {
+    setView('list')
+    setSelectedSubmission(null)
   }
 
+  // Show detail view
+  if (view === 'detail' && selectedSubmission) {
+    return (
+      <div className={className}>
+        <SubmissionDetail
+          submission={selectedSubmission}
+          onBack={handleBack}
+        />
+      </div>
+    )
+  }
+
+  // Show list view
   if (isLoading) {
     return (
       <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
@@ -140,7 +145,6 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="af-w-[100px]">Status</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Preview</TableHead>
             <TableHead>Date</TableHead>
@@ -153,23 +157,19 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
             const preview = getPreviewText(submission.data)
 
             return (
-              <TableRow
-                key={submission.id}
-                className={!submission.is_read ? 'af-bg-muted/30' : ''}
-              >
-                <TableCell>
-                  {submission.is_spam ? (
-                    <Badge variant="destructive">Spam</Badge>
-                  ) : !submission.is_read ? (
-                    <Badge variant="default">New</Badge>
-                  ) : (
-                    <Badge variant="secondary">Read</Badge>
-                  )}
-                </TableCell>
+              <TableRow key={submission.id}>
                 <TableCell className="af-font-medium">
-                  {email || (
-                    <span className="af-text-muted-foreground af-italic">No email</span>
-                  )}
+                  <div className="af-flex af-items-center af-gap-2">
+                    {email || (
+                      <span className="af-text-muted-foreground af-italic">No email</span>
+                    )}
+                    {submission.attachments.length > 0 && (
+                      <span className="af-flex af-items-center af-gap-1 af-text-muted-foreground" title={`${submission.attachments.length} attachment(s)`}>
+                        <Paperclip className="af-h-3 af-w-3" />
+                        <span className="af-text-xs">{submission.attachments.length}</span>
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="af-text-muted-foreground af-max-w-[200px] af-truncate">
                   {preview || (
@@ -180,44 +180,14 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
                   {formatDate(submission.metadata.submitted_at)}
                 </TableCell>
                 <TableCell className="af-text-right">
-                  <div className="af-flex af-items-center af-justify-end af-gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleViewSubmission(submission)}
-                      title="View details"
-                    >
-                      <Eye className="af-h-4 af-w-4" />
-                    </Button>
-                    {submission.is_read && !submission.is_spam && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => markAsSpam(submission.id)}
-                        title="Mark as spam"
-                      >
-                        <AlertTriangle className="af-h-4 af-w-4" />
-                      </Button>
-                    )}
-                    {!submission.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => markAsRead(submission.id)}
-                        title="Mark as read"
-                      >
-                        <Check className="af-h-4 af-w-4" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(submission.id)}
-                      title="Delete"
-                    >
-                      <Trash2 className="af-h-4 af-w-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleViewSubmission(submission)}
+                    title="View details"
+                  >
+                    <Eye className="af-h-4 af-w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             )
@@ -268,13 +238,6 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
           </Button>
         </div>
       </div>
-
-      {/* Submission Detail Dialog */}
-      <SubmissionDetail
-        submission={selectedSubmission}
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-      />
     </div>
   )
 }

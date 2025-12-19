@@ -45,8 +45,7 @@ export interface Submission {
   data: Record<string, unknown>
   attachments: Attachment[]
   metadata: SubmissionMetadata
-  is_read: boolean
-  is_spam: boolean
+  resend_id: string | null
 }
 
 /**
@@ -89,20 +88,11 @@ export interface UpdateFormInput {
 }
 
 /**
- * Input for updating a submission
- */
-export interface UpdateSubmissionInput {
-  is_read?: boolean
-  is_spam?: boolean
-}
-
-/**
  * Options for fetching submissions
  */
 export interface GetSubmissionsOptions {
   limit?: number
   offset?: number
-  include_spam?: boolean
 }
 
 /**
