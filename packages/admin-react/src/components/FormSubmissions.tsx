@@ -31,6 +31,8 @@ export interface FormSubmissionsProps {
   formId: string
   /** Optional className */
   className?: string
+  /** Submission ID to auto-open in detail view */
+  defaultSubmissionId?: string
 }
 
 type View = 'list' | 'detail'
@@ -67,7 +69,7 @@ function getPreviewText(data: Record<string, unknown>): string {
   return text.length > 50 ? text.slice(0, 50) + '...' : text
 }
 
-export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
+export function FormSubmissions({ formId, className, defaultSubmissionId }: FormSubmissionsProps) {
   const {
     submissions,
     total,
@@ -84,6 +86,17 @@ export function FormSubmissions({ formId, className }: FormSubmissionsProps) {
   const [view, setView] = React.useState<View>('list')
   const [selectedSubmission, setSelectedSubmission] =
     React.useState<Submission | null>(null)
+
+  // Auto-open submission detail if defaultSubmissionId is provided
+  React.useEffect(() => {
+    if (defaultSubmissionId && submissions.length > 0) {
+      const submission = submissions.find(s => s.id === defaultSubmissionId)
+      if (submission) {
+        setSelectedSubmission(submission)
+        setView('detail')
+      }
+    }
+  }, [defaultSubmissionId, submissions])
 
   const handleViewSubmission = (submission: Submission) => {
     setSelectedSubmission(submission)

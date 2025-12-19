@@ -32,6 +32,7 @@ export const mockForms: Form[] = [
 export const mockSubmissions: Submission[] = [
   {
     id: 'sub_1',
+    form_id: 'form_1',
     data: {
       name: 'John Doe',
       email: 'john@example.com',
@@ -60,6 +61,7 @@ export const mockSubmissions: Submission[] = [
   },
   {
     id: 'sub_2',
+    form_id: 'form_1',
     data: {
       name: 'Jane Smith',
       email: 'jane@company.com',
@@ -84,6 +86,7 @@ export const mockSubmissions: Submission[] = [
   },
   {
     id: 'sub_3',
+    form_id: 'form_1',
     data: {
       name: 'Test User',
       email: 'test@test.com',
@@ -99,6 +102,7 @@ export const mockSubmissions: Submission[] = [
   },
   {
     id: 'sub_4',
+    form_id: 'form_1',
     data: {
       name: 'Alice Johnson',
       email: 'alice@startup.io',
@@ -123,6 +127,7 @@ export const mockSubmissions: Submission[] = [
   },
   {
     id: 'sub_5',
+    form_id: 'form_1',
     data: {
       name: 'Bob Williams',
       email: 'bob.w@enterprise.com',

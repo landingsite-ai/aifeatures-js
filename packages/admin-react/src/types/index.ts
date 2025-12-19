@@ -42,6 +42,7 @@ export interface SubmissionMetadata {
  */
 export interface Submission {
   id: string
+  form_id: string
   data: Record<string, unknown>
   attachments: Attachment[]
   metadata: SubmissionMetadata

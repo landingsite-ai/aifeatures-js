@@ -5,35 +5,76 @@ import { Button } from '../ui/button'
 import { FormsList } from './FormsList'
 import { FormSubmissions } from './FormSubmissions'
 import { FormSettings } from './FormSettings'
+import { useAifeaturesContext } from '../provider/AifeaturesProvider'
 import type { Form } from '../types'
 
 export interface FormsDashboardProps {
   /** Optional className */
   className?: string
+  /** Submission ID to deep link to (opens form and shows submission detail) */
+  submissionId?: string
 }
 
 type View = 'list' | 'detail'
 
-export function FormsDashboard({ className }: FormsDashboardProps) {
+export function FormsDashboard({ className, submissionId }: FormsDashboardProps) {
+  const { api } = useAifeaturesContext()
   const [view, setView] = React.useState<View>('list')
   const [selectedForm, setSelectedForm] = React.useState<Form | null>(null)
   const [activeTab, setActiveTab] = React.useState<'submissions' | 'settings'>(
     'submissions'
   )
+  const [deepLinkSubmissionId, setDeepLinkSubmissionId] = React.useState<string | undefined>(submissionId)
+  const [isLoadingDeepLink, setIsLoadingDeepLink] = React.useState(!!submissionId)
+
+  // Handle deep linking to a submission
+  React.useEffect(() => {
+    if (!submissionId) return
+
+    async function loadSubmission() {
+      try {
+        // Fetch the submission to get its form_id
+        const submission = await api.getSubmission(submissionId!)
+        // Fetch the form
+        const form = await api.getForm(submission.form_id)
+        // Navigate to the form with the submission selected
+        setSelectedForm(form)
+        setView('detail')
+        setActiveTab('submissions')
+        setDeepLinkSubmissionId(submissionId)
+      } catch (error) {
+        console.error('Failed to load submission for deep link:', error)
+      } finally {
+        setIsLoadingDeepLink(false)
+      }
+    }
+
+    loadSubmission()
+  }, [submissionId, api])
 
   const handleSelectForm = (form: Form, tab: 'submissions' | 'settings') => {
     setSelectedForm(form)
     setView('detail')
     setActiveTab(tab)
+    setDeepLinkSubmissionId(undefined) // Clear deep link when manually selecting
   }
 
   const handleBack = () => {
     setView('list')
     setSelectedForm(null)
+    setDeepLinkSubmissionId(undefined)
   }
 
   const handleFormSaved = (updatedForm: Form) => {
     setSelectedForm(updatedForm)
+  }
+
+  if (isLoadingDeepLink) {
+    return (
+      <div className={`af-flex af-items-center af-justify-center af-py-8 ${className || ''}`}>
+        <div className="af-text-muted-foreground">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -88,7 +129,7 @@ export function FormsDashboard({ className }: FormsDashboardProps) {
             </TabsList>
 
             <TabsContent value="submissions">
-              <FormSubmissions formId={selectedForm.id} />
+              <FormSubmissions formId={selectedForm.id} defaultSubmissionId={deepLinkSubmissionId} />
             </TabsContent>
 
             <TabsContent value="settings">
