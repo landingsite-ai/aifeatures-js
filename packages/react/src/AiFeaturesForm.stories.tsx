@@ -128,6 +128,41 @@ export const WithSelect: Story = {
   ),
 }
 
+export const WithoutTurnstile: Story = {
+  render: () => (
+    <div style={{ maxWidth: 400, padding: 20 }}>
+      <p style={{ marginBottom: 16, color: '#666', fontSize: 14 }}>
+        This form has no Turnstile configured - it should submit without CAPTCHA.
+      </p>
+      <AiFeaturesForm
+        formId="no-turnstile-form"
+        onSuccess={() => console.log('Form submitted without Turnstile!')}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <FormField name="name" label="Name" required placeholder="John Doe" />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <FormField name="email" type="email" label="Email" required placeholder="john@example.com" />
+        </div>
+        <FormStatus
+          successMessage="Form submitted successfully (no CAPTCHA needed)!"
+          successClassName="success-message"
+        />
+        <FormActions>
+          <SubmitButton>Submit (No CAPTCHA)</SubmitButton>
+        </FormActions>
+      </AiFeaturesForm>
+      <style>{`
+        label { display: block; margin-bottom: 4px; font-weight: 500; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #0070f3; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        .success-message { color: green; margin-bottom: 16px; }
+      `}</style>
+    </div>
+  ),
+}
+
 export const SubmissionTest: Story = {
   render: () => (
     <div style={{ maxWidth: 400, padding: 20 }}>
